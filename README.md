@@ -1,5 +1,5 @@
 # GameFramework
-An extensible framework for many different two-player board games implemented using C# on .Net 6.
+An extensible framework for many different two-player board games implemented using C# on .Net 7.
 
 ## Description
 A variety of design patterns were used to achieve extensibility and reusability of the framework.
