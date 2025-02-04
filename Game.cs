@@ -102,7 +102,7 @@ public class SOSGame : Game
         sosBoard.Display();
         
         
-        //ask current player for input
+        //ask current player for  row input
         Console.WriteLine($"{currentPlayer.PlayerName}, it's your turn.");
         Console.Write("Enter row (0, 1, or 2): ");
         string rowInput = Console.ReadLine();
@@ -116,8 +116,7 @@ public class SOSGame : Game
     
         }
 
-    
-
+        // ask current player for column input
         Console.Write("Enter column (0, 1, or 2): ");
         string colInput = Console.ReadLine();
 
@@ -374,6 +373,17 @@ public class ConnectFour : Game
     }
     protected override bool EndOfGame()
     {
+         // Check if any player has won
+        if (connectFourBoard.CheckWinningCondition("X"))
+        {
+            Console.WriteLine("Player 1 wins!");
+            return true;
+        }
+        if (connectFourBoard.CheckWinningCondition("O"))
+        {
+            Console.WriteLine("Player 2 wins!");
+            return true;
+        }
         for(int row=0;row<connectFourBoard.Rows;row++)
         {
             for(int col=0;col<connectFourBoard.Cols;col++)
@@ -391,13 +401,28 @@ public class ConnectFour : Game
     }
     protected override void ShowWinner(Player player1, Player player2)
     {
-        
+            // Check for a winner by inspecting the board
+        if (connectFourBoard.CheckWinningCondition(player1.PlayerSymbol))
+        {
+            Console.WriteLine($"Congratulations {player1.PlayerName}! You are the winner with the symbol '{player1.PlayerSymbol}'.");
+        }
+        else if (connectFourBoard.CheckWinningCondition(player2.PlayerSymbol))
+        {
+            Console.WriteLine($"Congratulations {player2.PlayerName}! You are the winner with the symbol '{player2.PlayerSymbol}'.");
+        }
+        else
+        {
+            Console.WriteLine("It's a draw! No winner this time.");
+        }
+
+        // Optionally display final board state
+        connectFourBoard.Display();
 
     }
 
     protected bool WinningCondition()
     {
-        //check if for pieces have been connected
+        //check if four pieces have been connected
         return false;
     }
 }
