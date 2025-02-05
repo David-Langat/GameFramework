@@ -197,9 +197,71 @@ public class ConnectFourBoard : IBoard
                 return;
             }
         }
-        
-
-
         Console.WriteLine($"Column {col} is already full.");
+    }
+    // Check Winning Condition
+    public bool CheckWinningCondition(string piece)
+    {
+        // Check horizontal
+        for (int row = 0; row < rows; row++)
+        {
+            for (int col = 0; col <= cols - 4; col++)
+            {
+                if (board[row, col].RetrievePiece() == piece &&
+                    board[row, col + 1].RetrievePiece() == piece &&
+                    board[row, col + 2].RetrievePiece() == piece &&
+                    board[row, col + 3].RetrievePiece() == piece)
+                {
+                    return true; // Horizontal win
+                }
+            }
+        }
+
+        // Check vertical
+        for (int col = 0; col < cols; col++)
+        {
+            for (int row = 0; row <= rows - 4; row++)
+            {
+                if (board[row, col].RetrievePiece() == piece &&
+                    board[row + 1, col].RetrievePiece() == piece &&
+                    board[row + 2, col].RetrievePiece() == piece &&
+                    board[row + 3, col].RetrievePiece() == piece)
+                {
+                    return true; // Vertical win
+                }
+            }
+        }
+
+        // Check diagonal (left to right)
+        for (int row = 0; row <= rows - 4; row++)
+        {
+            for (int col = 0; col <= cols - 4; col++)
+            {
+                if (board[row, col].RetrievePiece() == piece &&
+                    board[row + 1, col + 1].RetrievePiece() == piece &&
+                    board[row + 2, col + 2].RetrievePiece() == piece &&
+                    board[row + 3, col + 3].RetrievePiece() == piece)
+                {
+                    return true; // Diagonal left-to-right win
+                }
+            }
+        }
+
+        // Check diagonal (right to left)
+        for (int row = 0; row <= rows - 4; row++)
+        {
+            for (int col = 3; col < cols; col++)
+            {
+                if (board[row, col].RetrievePiece() == piece &&
+                    board[row + 1, col - 1].RetrievePiece() == piece &&
+                    board[row + 2, col - 2].RetrievePiece() == piece &&
+                    board[row + 3, col - 3].RetrievePiece() == piece)
+                {
+                    return true; // Diagonal right-to-left win
+                }
+            }
+        }
+
+        return false;
     }
 }
