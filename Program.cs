@@ -1,5 +1,5 @@
-﻿namespace GameFramework;
-class program
+﻿
+class Program
 {
         public static void Main(string[] args)
     {
@@ -65,11 +65,11 @@ class program
         string userInput;
         int userIntInput;
         //check if inputis interger if not reprompt user for input
-        userInput = Console.ReadLine();
+        userInput = Console.ReadLine() ?? "";
         while(!int.TryParse(userInput,out userIntInput))
         {
             Console.WriteLine("INVALID INPUT!!! Enter a number");
-            userInput = Console.ReadLine();
+            userInput = Console.ReadLine() ?? "";
         }
         return userIntInput;
     }
