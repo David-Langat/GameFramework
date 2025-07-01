@@ -1,14 +1,97 @@
 # GameFramework
-An extensible framework for many different two-player board games implemented using C# on .Net 7.
 
-## Description
-A variety of design patterns were used to achieve extensibility and reusability of the framework.
-Demonstration of the afformentioned properties was done by implementing the following games.
+An extensible C# framework for creating and playing two-player board games, built with .NET 7. This project serves as a practical demonstration of object-oriented design patterns to promote code reusability, flexibility, and extensibility.
 
-* SOS. Two players take turns to add either an S or an O (no requirement to use the same
-letter each turn) on a board with at least 3x3 squares in size. If a player makes the sequence
-SOS vertically, horizontally or diagonally they get a point and also take another turn. Once the
-grid has been filled up, the winner is the player who made the most SOSs.
-* Connect Four aka Four in a Row. Two players take turns dropping pieces on a 7x6 board. The
-player forms an unbroken chain of four pieces horizontally, vertically, or diagonally, wins the
-game.
+## Implemented Games
+
+The framework currently includes two fully playable games:
+
+*   **SOS:** A game where two players take turns adding either an 'S' or an 'O' to a grid. A player scores a point for creating an 'SOS' sequence (horizontally, vertically, or diagonally). The player with the most points when the grid is full wins.
+*   **Connect Four:** The classic game where two players take turns dropping their colored discs into a 7x6 vertically suspended grid. The first player to form a horizontal, vertical, or diagonal line of four of their own discs wins.
+
+## Core Design Patterns
+
+The architecture of this framework is heavily influenced by several key design patterns, which make it easy to modify existing games or add new ones.
+
+### 1. Template Method Pattern
+
+The core game loop is defined in the abstract `Game` class. The `PlayGame()` method acts as a template method, defining the skeleton of the algorithm for a game's execution.
+
+```csharp
+// In Game.cs
+public abstract class Game
+{
+    // ...
+    public void PlayGame(int numberOfPlayers, string playerMode)
+    {
+        InitializeNewGame(playerMode, out Player player1, out Player player2);
+        int currentPlayerIndex = 0;
+        while (!EndOfGame())
+        {
+            PlayMove(currentPlayerIndex, player1, player2);
+            currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
+        }
+        ShowWinner(player1, player2);
+    }
+
+    protected abstract void InitializeNewGame(string playerMode, out Player player1, out Player player2);
+    protected abstract void PlayMove(int player, Player player1, Player player2);
+    protected abstract bool EndOfGame();
+    protected abstract void ShowWinner(Player player1, Player player2);
+}
+```
+
+Concrete game classes like `SOSGame` and `ConnectFour` provide their own implementations for the abstract steps (`InitializeNewGame`, `PlayMove`, etc.), allowing them to define game-specific logic while reusing the overall game flow structure.
+
+### 2. Strategy Pattern
+
+The framework uses the Strategy Pattern to allow the game type to be selected at runtime. The `Program.cs` file decides which concrete `Game` implementation (`SOSGame` or `ConnectFour`) to instantiate based on user input. This encapsulates the game logic into separate strategy objects.
+
+```csharp
+// In Program.cs
+if (gameType == "SOS")
+{
+    Game sosGame = new SOSGame(ui);
+    sosGame.PlayGame(playerNumber, playerMode);
+}
+else if (gameType == "ConnectFour")
+{
+    Game connectFour = new ConnectFour(ui);
+    connectFour.PlayGame(playerNumber, playerMode);
+}
+```
+
+This makes it easy to add new games without changing the main program's structure. You would simply create a new class that inherits from `Game` and instantiate it.
+
+### 3. Composite Pattern
+
+The game board is structured using the Composite Pattern. The `IBoard` interface defines a common contract for both individual `Cell` objects (Leaf) and the composite `SOSBoard` or `ConnectFourBoard` objects (Composite).
+
+```csharp
+// In Board.cs
+public interface IBoard
+{
+    void Display();
+    string GetBoardAsString();
+}
+
+// Leaf
+public class Cell : IBoard { /* ... */ }
+
+// Composite
+public class SOSBoard : IBoard
+{
+    private Cell[,] board;
+    // ...
+}
+```
+
+This pattern allows the client code (like the UI) to treat a single cell and a full game board uniformly. For example, the `Display()` method can be called on the entire board, which then iterates and calls `Display()` on its individual cells.
+
+## How to Run
+
+1.  Ensure you have the .NET 7 SDK installed.
+2.  Clone the repository.
+3.  Navigate to the project directory in your terminal.
+4.  Run the command: `dotnet run`
+5.  Follow the on-screen prompts to select a game and player mode.
