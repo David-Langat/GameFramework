@@ -4,6 +4,7 @@ public interface IBoard
 {
     // The following methods will be used by all child class
     void Display();
+    string GetBoardAsString();
 }
 
 // Leaf class (represents individual cells in the "SOS" an "Connectfour" game board)
@@ -49,6 +50,11 @@ public class Cell : IBoard
     {
         Console.Write($"[{piece}]\t");
         
+    }
+
+    public string GetBoardAsString()
+    {
+        return $"[{piece}]";
     }
 }
 
@@ -109,6 +115,22 @@ public class SOSBoard : IBoard
            
         }
         Console.WriteLine("--------------------------------------------------------\n");
+    }
+
+   public string GetBoardAsString()
+    {
+        string boardString = "SOS Game Board:(" + rows + "*" + cols + ")\n";
+        boardString += "--------------------------------------------------------\n";
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                boardString += "[" + board[i, j].RetrievePiece() + "]\t";
+            }
+            boardString += "\n";
+        }
+        boardString += "--------------------------------------------------------\n";
+        return boardString;
     }
 
    // method that takes row and column and places input in cell
@@ -179,6 +201,23 @@ public class ConnectFourBoard : IBoard
             Console.WriteLine();
         }
         Console.WriteLine("--------------------------------------------------------\n");
+    }
+
+    public string GetBoardAsString()
+    {
+        string boardString = "ConnectFour Board:(" + rows + "*" + cols + ")\n";
+        boardString += "--------------------------------------------------------\n";
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                boardString += "[" + board[i, j].RetrievePiece() + "]\t";
+            }
+            boardString += "\n";
+        }
+        boardString += "--------------------------------------------------------\n";
+        return boardString;
     }
 
     public void PlacePiece(int col, string pieceInput)
