@@ -112,73 +112,63 @@ public class SOSGame : Game
 
     public int AddPoint()
     {
-        if (horizontal)
+        int points = 0;
+
+        // Check for horizontal "SOS"
+        for (int row = 0; row < sosBoard.Rows; row++)
         {
-            for (int row = 0; row < sosBoard.Rows; row++)
+            for (int col = 0; col < sosBoard.Cols - 2; col++)
             {
-                for (int col = 0; col < sosBoard.Cols - 2; col++)
+                if (sosBoard.Board[row, col].RetrievePiece() == "S" && sosBoard.Board[row, col + 1].RetrievePiece() == "O" && sosBoard.Board[row, col + 2].RetrievePiece() == "S")
                 {
-                    if (sosBoard.Board[row, col].RetrievePiece() == "S" && sosBoard.Board[row, col + 1].RetrievePiece() == "O" && sosBoard.Board[row, col + 2].RetrievePiece() == "S")
-                    {
-                        horizontal = false;
-                        return 1;
-                    }
+                    points++;
                 }
             }
         }
 
-        if (vertical)
+        // Check for vertical "SOS"
+        for (int row = 0; row < sosBoard.Rows - 2; row++)
         {
-            for (int row = 0; row < sosBoard.Rows - 2; row++)
+            for (int col = 0; col < sosBoard.Cols; col++)
             {
-                for (int col = 0; col < sosBoard.Cols; col++)
+                if (sosBoard.Board[row, col].RetrievePiece() == "S" &&
+                    sosBoard.Board[row + 1, col].RetrievePiece() == "O" &&
+                    sosBoard.Board[row + 2, col].RetrievePiece() == "S")
                 {
-                    if (sosBoard.Board[row, col].RetrievePiece() == "S" &&
-                        sosBoard.Board[row + 1, col].RetrievePiece() == "O" &&
-                        sosBoard.Board[row + 2, col].RetrievePiece() == "S")
-                    {
-                        vertical = false;
-                        return 1;
-                    }
+                    points++;
                 }
             }
         }
 
-        if (leftToRight)
+        // Check for left-to-right diagonal "SOS"
+        for (int row = 0; row < sosBoard.Rows - 2; row++)
         {
-            for (int row = 0; row < sosBoard.Rows - 2; row++)
+            for (int col = 0; col < sosBoard.Cols - 2; col++)
             {
-                for (int col = 0; col < sosBoard.Cols - 2; col++)
+                if (sosBoard.Board[row, col].RetrievePiece() == "S" &&
+                    sosBoard.Board[row + 1, col + 1].RetrievePiece() == "O" &&
+                    sosBoard.Board[row + 2, col + 2].RetrievePiece() == "S")
                 {
-                    if (sosBoard.Board[row, col].RetrievePiece() == "S" &&
-                        sosBoard.Board[row + 1, col + 1].RetrievePiece() == "O" &&
-                        sosBoard.Board[row + 2, col + 2].RetrievePiece() == "S")
-                    {
-                        leftToRight = false;
-                        return 1;
-                    }
+                    points++;
                 }
             }
         }
 
-        if (rightToLeft)
+        // Check for right-to-left diagonal "SOS"
+        for (int row = 2; row < sosBoard.Rows; row++)
         {
-            for (int row = 2; row < sosBoard.Rows; row++)
+            for (int col = 0; col < sosBoard.Cols - 2; col++)
             {
-                for (int col = 0; col < sosBoard.Cols - 2; col++)
+                if (sosBoard.Board[row, col].RetrievePiece() == "S" &&
+                    sosBoard.Board[row - 1, col + 1].RetrievePiece() == "O" &&
+                    sosBoard.Board[row - 2, col + 2].RetrievePiece() == "S")
                 {
-                    if (sosBoard.Board[row, col].RetrievePiece() == "S" &&
-                        sosBoard.Board[row - 1, col + 1].RetrievePiece() == "O" &&
-                        sosBoard.Board[row - 2, col + 2].RetrievePiece() == "S")
-                    {
-                        rightToLeft = false;
-                        return 1;
-                    }
+                    points++;
                 }
             }
         }
 
-        return 0;
+        return points;
     }
 }
 
