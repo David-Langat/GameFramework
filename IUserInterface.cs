@@ -1,6 +1,7 @@
 
 public interface IUserInterface
 {
+    void ClearScreen();
     void DisplayWelcomeMessage();
     void DecideGameToPlay();
     void DecidePlayerMode();

@@ -58,6 +58,7 @@ public class SOSGame : Game
 
     protected override void PlayMove(int player, Player player1, Player player2)
     {
+        ui.ClearScreen();
         Player currentPlayer = (player == 0) ? player1 : player2;
 
         ui.SOSHelpGuide();
@@ -209,6 +210,7 @@ public class ConnectFour : Game
 
     protected override void PlayMove(int player, Player player1, Player player2)
     {
+        ui.ClearScreen();
         Player currentPlayer = (player == 0) ? player1 : player2;
 
         ui.ConnectFourHelpGuide();

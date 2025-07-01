@@ -1,6 +1,11 @@
 
 public class ConsoleUI : IUserInterface
 {
+    public void ClearScreen()
+    {
+        Console.Clear();
+    }
+
     public void DisplayWelcomeMessage()
     {
         Console.WriteLine("Hello there! welcome to our game.");
