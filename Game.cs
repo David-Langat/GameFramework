@@ -64,16 +64,47 @@ public class SOSGame : Game
         ui.SOSHelpGuide();
         ui.DisplayBoard(sosBoard.GetBoardAsString());
 
-        var (row, col, piece) = ui.GetPlayerMove(currentPlayer);
+        int row, col;
+        string piece;
 
-        while (sosBoard.Board[row, col].RetrievePiece() != " ")
+        if (currentPlayer is ComputerPlayer computer)
         {
-            ui.InvalidInput();
-            (row, col, piece) = ui.GetPlayerMove(currentPlayer);
+            do
+            {
+                computer.SelectValidMove(sosBoard.Rows, sosBoard.Cols);
+                row = computer.Row;
+                col = computer.Col;
+            } while (sosBoard.Board[row, col].RetrievePiece() != " ");
+            piece = new Random().Next(0, 2) == 0 ? "S" : "O";
+            Console.WriteLine($"Computer places '{piece}' at [{row}, {col}]");
+            System.Threading.Thread.Sleep(1000); // Pause for effect
+        }
+        else
+        {
+            var move = ui.GetPlayerMove(currentPlayer);
+            row = move.Item1;
+            col = move.Item2;
+            piece = move.Item3;
+
+            while (sosBoard.Board[row, col].RetrievePiece() != " ")
+            {
+                ui.InvalidInput();
+                move = ui.GetPlayerMove(currentPlayer);
+                row = move.Item1;
+                col = move.Item2;
+                piece = move.Item3;
+            }
         }
 
         sosBoard.PlacePiece(row, col, piece);
-        currentPlayer.PlayerPoint += AddPoint();
+        int points = AddPoint();
+        if (points > 0)
+        {
+            currentPlayer.PlayerPoint += points;
+            Console.WriteLine($"{currentPlayer.PlayerName} scored {points} point(s)!");
+            System.Threading.Thread.Sleep(1500);
+        }
+
 
         ui.DisplayBoard(sosBoard.GetBoardAsString());
         ui.ShowPlayerTurn(currentPlayer);
@@ -206,7 +237,23 @@ public class ConnectFour : Game
         ui.ConnectFourHelpGuide();
         ui.DisplayBoard(connectFourBoard.GetBoardAsString());
 
-        var (_, col, _) = ui.GetPlayerMove(currentPlayer);
+        int col;
+
+        if (currentPlayer is ComputerPlayer computer)
+        {
+            do
+            {
+                computer.SelectValidMove(connectFourBoard.Rows, connectFourBoard.Cols);
+                col = computer.Col;
+            } while (connectFourBoard.Board[0, col].RetrievePiece() != " "); // Check if the top of the column is full
+            Console.WriteLine($"Computer chooses column {col}");
+            System.Threading.Thread.Sleep(1000); // Pause for effect
+        }
+        else
+        {
+            var move = ui.GetPlayerMove(currentPlayer);
+            col = move.Item2;
+        }
 
         connectFourBoard.PlacePiece(col, currentPlayer.PlayerSymbol);
         ui.DisplayBoard(connectFourBoard.GetBoardAsString());
