@@ -56,7 +56,7 @@ public class ConsoleUI : IUserInterface
     public void ConnectFourHelpGuide()
     {
         Console.WriteLine("*******************************");
-        Console.WriteLine("This is a typical 7x6 ConnectFour Game;");
+        Console.WriteLine("This is a typical 6x7 ConnectFour Game;");
         Console.WriteLine("Enter column number will replace the space;");
         Console.WriteLine("Player1 will use O and plyer2 will use X to replace the space");
         Console.WriteLine("Who can line up 4 connection who can we the game;");
@@ -126,13 +126,13 @@ public class ConsoleUI : IUserInterface
         }
         else // Connect Four
         {
-            Console.Write("Enter column (0, 1, 2, 3, 4, or 5): ");
+            Console.Write("Enter column (0-6): ");
             string colInput = Console.ReadLine();
 
-            while (!int.TryParse(colInput, out col) || (col < 0 || col > 5))
+            while (!int.TryParse(colInput, out col) || (col < 0 || col > 6))
             {
                 Console.WriteLine("Invalid column selection! Try again.");
-                Console.Write("Enter column (0, 1, 2, 3, 4, or 5): ");
+                Console.Write("Enter column (0-6): ");
                 colInput = Console.ReadLine();
             }
         }

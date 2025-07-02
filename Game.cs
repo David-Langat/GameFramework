@@ -205,7 +205,7 @@ public class SOSGame : Game
 
 public class ConnectFour : Game
 {
-    ConnectFourBoard connectFourBoard = new ConnectFourBoard(7, 6);
+    ConnectFourBoard connectFourBoard = new ConnectFourBoard(6, 7);
 
     public ConnectFour(IUserInterface ui) : base(ui) { }
 
