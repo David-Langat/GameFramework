@@ -126,13 +126,13 @@ public class ConsoleUI : IUserInterface
         }
         else // Connect Four
         {
-            Console.Write("Enter column (0, 1,2,3,4, or 5): ");
+            Console.Write("Enter column (0, 1, 2, 3, 4, or 5): ");
             string colInput = Console.ReadLine();
 
             while (!int.TryParse(colInput, out col) || (col < 0 || col > 5))
             {
                 Console.WriteLine("Invalid column selection! Try again.");
-                Console.Write("Enter column (0, 1,2,3,4, or 5): ");
+                Console.Write("Enter column (0, 1, 2, 3, 4, or 5): ");
                 colInput = Console.ReadLine();
             }
         }
