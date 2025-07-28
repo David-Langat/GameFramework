@@ -13,7 +13,7 @@ public abstract class Game
     }
 
     protected abstract void InitializeNewGame(string playerMode, out Player player1, out Player player2);
-    protected abstract void PlayMove(int player, Player player1, Player player2);
+    protected abstract bool PlayMove(int player, Player player1, Player player2);
     protected abstract bool EndOfGame();
     protected abstract void ShowWinner(Player player1, Player player2);
 
@@ -24,8 +24,10 @@ public abstract class Game
         int a = 0;
         while (!EndOfGame())
         {
-            PlayMove(a, player1, player2);
-            a = (a + 1) % numberOfPlayers;
+            if (!PlayMove(a, player1, player2))
+            {
+                a = (a + 1) % numberOfPlayers;
+            }
         }
         ShowWinner(player1, player2);
     }
@@ -56,7 +58,7 @@ public class SOSGame : Game
         }
     }
 
-    protected override void PlayMove(int player, Player player1, Player player2)
+    protected override bool PlayMove(int player, Player player1, Player player2)
     {
         ui.ClearScreen();
         Player currentPlayer = (player == 0) ? player1 : player2;
@@ -103,11 +105,15 @@ public class SOSGame : Game
             currentPlayer.PlayerPoint += points;
             Console.WriteLine($"{currentPlayer.PlayerName} scored {points} point(s)!");
             System.Threading.Thread.Sleep(1500);
+            ui.DisplayBoard(sosBoard.GetBoardAsString());
+            ui.ShowPlayerTurn(currentPlayer);
+            return true;
         }
 
 
         ui.DisplayBoard(sosBoard.GetBoardAsString());
         ui.ShowPlayerTurn(currentPlayer);
+        return false;
     }
 
     protected override bool EndOfGame()
@@ -229,7 +235,7 @@ public class ConnectFour : Game
         player2.PlayerSymbol = "O";
     }
 
-    protected override void PlayMove(int player, Player player1, Player player2)
+    protected override bool PlayMove(int player, Player player1, Player player2)
     {
         ui.ClearScreen();
         Player currentPlayer = (player == 0) ? player1 : player2;
@@ -257,6 +263,7 @@ public class ConnectFour : Game
 
         connectFourBoard.PlacePiece(col, currentPlayer.PlayerSymbol);
         ui.DisplayBoard(connectFourBoard.GetBoardAsString());
+        return false;
     }
 
     protected override bool EndOfGame()
