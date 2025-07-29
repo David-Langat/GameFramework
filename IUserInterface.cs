@@ -1,4 +1,3 @@
-
 public interface IUserInterface
 {
     void ClearScreen();
@@ -15,4 +14,7 @@ public interface IUserInterface
     void DisplayBoard(string board);
     void ShowWinner(string winner);
     (int, int, string) GetPlayerMove(Player player);
+    string GetSaveFileName();
+    string GetLoadFileName();
+    void DisplayMessage(string message);
 }

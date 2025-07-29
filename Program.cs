@@ -1,33 +1,71 @@
+
 class Program
 {
     public static void Main(string[] args)
     {
         IUserInterface ui = new ConsoleUI();
-        string playerMode, gameType;
-        int userInput;
+        GameCaretaker caretaker = new GameCaretaker();
+        Game game = null;
 
         ui.DisplayWelcomeMessage();
-        ui.DecideGameToPlay();
-        userInput = ui.GetIntUserInput();
-        GameType(userInput, out gameType, ui);
-        Console.WriteLine("{0}", gameType);
+        ui.DisplayMessage("Enter 1 to start a new game, or 2 to load a saved game:");
+        int choice = ui.GetIntUserInput();
 
-        ui.DecidePlayerMode();
-        userInput = ui.GetIntUserInput();
-        PlayerMode(userInput, out playerMode, ui);
-        Console.WriteLine("{0}", playerMode);
-
-        if (gameType == "SOS")
+        if (choice == 1)
         {
-            int playerNumber = 2;
-            Game sosGame = new SOSGame(ui);
-            sosGame.PlayGame(playerNumber, playerMode);
+            string playerMode, gameType;
+            ui.DecideGameToPlay();
+            int gameTypeChoice = ui.GetIntUserInput();
+            GameType(gameTypeChoice, out gameType, ui);
+
+            ui.DecidePlayerMode();
+            int playerModeChoice = ui.GetIntUserInput();
+            PlayerMode(playerModeChoice, out playerMode, ui);
+
+            if (gameType == "SOS")
+            {
+                game = new SOSGame(ui);
+            }
+            else if (gameType == "ConnectFour")
+            {
+                game = new ConnectFour(ui);
+            }
+
+            game.PlayGame(2, playerMode);
         }
-        else if (gameType == "ConnectFour")
+        else if (choice == 2)
         {
-            int playerNumber = 2;
-            Game connectFour = new ConnectFour(ui);
-            connectFour.PlayGame(playerNumber, playerMode);
+            string fileName = ui.GetLoadFileName();
+            try
+            {
+                GameState memento = caretaker.LoadGame(fileName);
+                if (memento.GameType == "SOS")
+                {
+                    game = new SOSGame(ui);
+                }
+                else if (memento.GameType == "ConnectFour")
+                {
+                    game = new ConnectFour(ui);
+                }
+                game.RestoreMemento(memento);
+                game.PlayGame(2, memento.PlayerMode);
+            }
+            catch (Exception ex)
+            {
+                ui.DisplayMessage($"Error loading game: {ex.Message}");
+                return;
+            }
+        }
+
+        // After the game loop, ask to save
+        ui.DisplayMessage("Do you want to save the game? (y/n)");
+        string saveChoice = Console.ReadLine();
+        if (saveChoice.ToLower() == "y")
+        {
+            string fileName = ui.GetSaveFileName();
+            GameState memento = game.CreateMemento();
+            caretaker.SaveGame(memento, fileName);
+            ui.DisplayMessage("Game saved successfully!");
         }
     }
 
@@ -46,7 +84,7 @@ class Program
     public static void PlayerMode(int selectedPlayerMode, out string playerMode, IUserInterface ui)
     {
         while (!IsValid(selectedPlayerMode))
-        {
+        { 
             ui.InvalidInput();
             ui.DecidePlayerMode();
             selectedPlayerMode = ui.GetIntUserInput();

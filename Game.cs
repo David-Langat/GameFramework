@@ -1,3 +1,4 @@
+
 using System.Data;
 using System.Diagnostics;
 using System.Runtime;
@@ -6,6 +7,9 @@ public abstract class Game
 {
     protected IUserInterface ui;
     private int numberOfPlayers;
+    protected Player player1;
+    protected Player player2;
+    protected int currentPlayerIndex;
 
     public Game(IUserInterface ui)
     {
@@ -16,17 +20,19 @@ public abstract class Game
     protected abstract bool PlayMove(int player, Player player1, Player player2);
     protected abstract bool EndOfGame();
     protected abstract void ShowWinner(Player player1, Player player2);
+    public abstract GameState CreateMemento();
+    public abstract void RestoreMemento(GameState memento);
 
     public void PlayGame(int numberOfPlayers, string playerMode)
     {
         this.numberOfPlayers = numberOfPlayers;
-        InitializeNewGame(playerMode, out Player player1, out Player player2);
-        int a = 0;
+        InitializeNewGame(playerMode, out player1, out player2);
+        currentPlayerIndex = 0;
         while (!EndOfGame())
         {
-            if (!PlayMove(a, player1, player2))
+            if (!PlayMove(currentPlayerIndex, player1, player2))
             {
-                a = (a + 1) % numberOfPlayers;
+                currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
             }
         }
         ShowWinner(player1, player2);
@@ -36,7 +42,6 @@ public abstract class Game
 public class SOSGame : Game
 {
     SOSBoard sosBoard = new SOSBoard(3, 3);
-    private bool horizontal = true, vertical = true, leftToRight = true, rightToLeft = true;
 
     public SOSGame(IUserInterface ui) : base(ui) { }
 
@@ -56,6 +61,8 @@ public class SOSGame : Game
         {
             player2 = new ComputerPlayer();
         }
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     protected override bool PlayMove(int player, Player player1, Player player2)
@@ -207,6 +214,46 @@ public class SOSGame : Game
 
         return points;
     }
+
+    public override GameState CreateMemento()
+    {
+        string[,] boardState = new string[sosBoard.Rows, sosBoard.Cols];
+        for (int i = 0; i < sosBoard.Rows; i++)
+        {
+            for (int j = 0; j < sosBoard.Cols; j++)
+            {
+                boardState[i, j] = sosBoard.Board[i, j].RetrievePiece();
+            }
+        }
+
+        return new GameState
+        {
+            GameType = "SOS",
+            BoardState = boardState,
+            CurrentPlayerIndex = this.currentPlayerIndex,
+            Player1Name = this.player1.PlayerName,
+            Player2Name = this.player2.PlayerName,
+            Player1Score = this.player1.PlayerPoint,
+            Player2Score = this.player2.PlayerPoint
+        };
+    }
+
+    public override void RestoreMemento(GameState memento)
+    {
+        for (int i = 0; i < sosBoard.Rows; i++)
+        {
+            for (int j = 0; j < sosBoard.Cols; j++)
+            {
+                sosBoard.Board[i, j].PlacePiece(memento.BoardState[i, j]);
+            }
+        }
+
+        this.currentPlayerIndex = memento.CurrentPlayerIndex;
+        this.player1.PlayerName = memento.Player1Name;
+        this.player2.PlayerName = memento.Player2Name;
+        this.player1.PlayerPoint = memento.Player1Score;
+        this.player2.PlayerPoint = memento.Player2Score;
+    }
 }
 
 public class ConnectFour : Game
@@ -233,6 +280,8 @@ public class ConnectFour : Game
             player2 = new ComputerPlayer();
         }
         player2.PlayerSymbol = "O";
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     protected override bool PlayMove(int player, Player player1, Player player2)
@@ -303,5 +352,45 @@ public class ConnectFour : Game
         }
 
         ui.DisplayBoard(connectFourBoard.GetBoardAsString());
+    }
+
+    public override GameState CreateMemento()
+    {
+        string[,] boardState = new string[connectFourBoard.Rows, connectFourBoard.Cols];
+        for (int i = 0; i < connectFourBoard.Rows; i++)
+        {
+            for (int j = 0; j < connectFourBoard.Cols; j++)
+            {
+                boardState[i, j] = connectFourBoard.Board[i, j].RetrievePiece();
+            }
+        }
+
+        return new GameState
+        {
+            GameType = "ConnectFour",
+            BoardState = boardState,
+            CurrentPlayerIndex = this.currentPlayerIndex,
+            Player1Name = this.player1.PlayerName,
+            Player2Name = this.player2.PlayerName,
+            Player1Symbol = this.player1.PlayerSymbol,
+            Player2Symbol = this.player2.PlayerSymbol
+        };
+    }
+
+    public override void RestoreMemento(GameState memento)
+    {
+        for (int i = 0; i < connectFourBoard.Rows; i++)
+        {
+            for (int j = 0; j < connectFourBoard.Cols; j++)
+            {
+                connectFourBoard.Board[i, j].PlacePiece(memento.BoardState[i, j]);
+            }
+        }
+
+        this.currentPlayerIndex = memento.CurrentPlayerIndex;
+        this.player1.PlayerName = memento.Player1Name;
+        this.player2.PlayerName = memento.Player2Name;
+        this.player1.PlayerSymbol = memento.Player1Symbol;
+        this.player2.PlayerSymbol = memento.Player2Symbol;
     }
 }

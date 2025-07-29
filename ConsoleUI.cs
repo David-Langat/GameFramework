@@ -1,4 +1,3 @@
-
 public class ConsoleUI : IUserInterface
 {
     public void ClearScreen()
@@ -138,5 +137,22 @@ public class ConsoleUI : IUserInterface
         }
 
         return (row, col, piece);
+    }
+
+    public string GetSaveFileName()
+    {
+        Console.Write("Enter the file name to save the game: ");
+        return Console.ReadLine();
+    }
+
+    public string GetLoadFileName()
+    {
+        Console.Write("Enter the file name to load the game: ");
+        return Console.ReadLine();
+    }
+
+    public void DisplayMessage(string message)
+    {
+        Console.WriteLine(message);
     }
 }
