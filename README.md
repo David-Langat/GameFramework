@@ -1,3 +1,4 @@
+
 # GameFramework
 
 An extensible C# framework for creating and playing two-player board games, built with .NET 7. This project serves as a practical demonstration of object-oriented design patterns to promote code reusability, flexibility, and extensibility.
@@ -6,7 +7,7 @@ An extensible C# framework for creating and playing two-player board games, buil
 
 The framework currently includes two fully playable games:
 
-*   **SOS:** A game where two players take turns adding either an 'S' or an 'O' to a grid. A player scores a point for creating an 'SOS' sequence (horizontally, vertically, or diagonally). The player with the most points when the grid is full wins.
+*   **SOS:** A game where two players take turns adding either an 'S' or an 'O' to a grid. A player scores a point for creating an 'SOS' sequence (horizontally, vertically, or diagonally) and gets another turn. The player with the most points when the grid is full wins.
 *   **Connect Four:** The classic game where two players take turns dropping their colored discs into a 7x6 vertically suspended grid. The first player to form a horizontal, vertical, or diagonal line of four of their own discs wins.
 
 ## Core Design Patterns
@@ -87,6 +88,15 @@ public class SOSBoard : IBoard
 ```
 
 This pattern allows the client code (like the UI) to treat a single cell and a full game board uniformly. For example, the `Display()` method can be called on the entire board, which then iterates and calls `Display()` on its individual cells.
+
+### 4. Memento Pattern
+
+The Memento pattern is used to implement the save and restore functionality. The `GameState` class acts as the Memento, storing the state of the game. The `Game` class is the Originator, creating and restoring Mementos. The `GameCaretaker` class is the Caretaker, responsible for storing and retrieving the Mementos.
+
+## Features
+
+*   **Human vs Human and Computer vs Human modes.**
+*   **Save and Restore Game:** Save the current game state to a file and restore it later.
 
 ## How to Run
 
