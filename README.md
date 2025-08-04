@@ -1,4 +1,3 @@
-
 # GameFramework
 
 An extensible C# framework for creating and playing two-player board games, built with .NET 7. This project serves as a practical demonstration of object-oriented design patterns to promote code reusability, flexibility, and extensibility.
@@ -93,10 +92,70 @@ This pattern allows the client code (like the UI) to treat a single cell and a f
 
 The Memento pattern is used to implement the save and restore functionality. The `GameState` class acts as the Memento, storing the state of the game. The `Game` class is the Originator, creating and restoring Mementos. The `GameCaretaker` class is the Caretaker, responsible for storing and retrieving the Mementos.
 
+```csharp
+// In GameState.cs
+public class GameState
+{
+    public string GameType { get; set; }
+    public string PlayerMode { get; set; }
+    public string[,] BoardState { get; set; }
+    public int CurrentPlayerIndex { get; set; }
+    public string Player1Name { get; set; }
+    public string Player2Name { get; set; }
+    public int Player1Score { get; set; }
+    public int Player2Score { get; set; }
+    public string Player1Symbol { get; set; }
+    public string Player2Symbol { get; set; }
+}
+```
+
+### 5. Command Pattern
+
+The Command pattern is used to implement the undo and redo functionality. The `ICommand` interface defines the contract for executing and unexecuting a command. The `MoveCommand` class is a concrete command that encapsulates a player's move.
+
+```csharp
+// In ICommand.cs
+public interface ICommand
+{
+    void Execute();
+    void Unexecute();
+}
+
+// In MoveCommand.cs
+public class MoveCommand : ICommand
+{
+    private readonly Game _game;
+    private readonly int _player;
+    private readonly Player _player1;
+    private readonly Player _player2;
+    private GameState _beforeState;
+
+    public MoveCommand(Game game, int player, Player player1, Player player2)
+    {
+        _game = game;
+        _player = player;
+        _player1 = player1;
+        _player2 = player2;
+    }
+
+    public void Execute()
+    {
+        _beforeState = _game.CreateMemento();
+        _game.PlayMove(_player, _player1, _player2);
+    }
+
+    public void Unexecute()
+    {
+        _game.RestoreMemento(_beforeState);
+    }
+}
+```
+
 ## Features
 
 *   **Human vs Human and Computer vs Human modes.**
 *   **Save and Restore Game:** Save the current game state to a file and restore it later.
+*   **Undo and Redo Moves:** Undo and redo moves made by the players.
 
 ## How to Run
 
