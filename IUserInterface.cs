@@ -1,3 +1,4 @@
+
 public interface IUserInterface
 {
     void ClearScreen();
@@ -17,4 +18,5 @@ public interface IUserInterface
     string GetSaveFileName();
     string GetLoadFileName();
     void DisplayMessage(string message);
+    char GetMenuChoice();
 }

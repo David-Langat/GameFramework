@@ -155,4 +155,10 @@ public class ConsoleUI : IUserInterface
     {
         Console.WriteLine(message);
     }
+
+    public char GetMenuChoice()
+    {
+        Console.WriteLine("\nEnter 'm' to make a move, 'u' to undo, 'r' to redo, 's' to save, 'l' to load, 'q' to quit:");
+        return Console.ReadKey().KeyChar;
+    }
 }
