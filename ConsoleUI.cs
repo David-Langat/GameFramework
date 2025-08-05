@@ -94,8 +94,10 @@ public class ConsoleUI : IUserInterface
 
         if (player.PlayerSymbol == null) // SOS Game
         {
-            Console.Write("Enter row (0, 1, or 2): ");
+            Console.Write("Enter row (0, 1, or 2), or type 'undo'/'redo': ");
             string rowInput = Console.ReadLine();
+            if (rowInput.ToLower() == "undo" || rowInput.ToLower() == "redo") return (0, 0, rowInput);
+
 
             while (!int.TryParse(rowInput, out row) || (row < 0 || row > 2))
             {
@@ -125,8 +127,10 @@ public class ConsoleUI : IUserInterface
         }
         else // Connect Four
         {
-            Console.Write("Enter column (0-6): ");
+            Console.Write("Enter column (0-6), or type 'undo'/'redo': ");
             string colInput = Console.ReadLine();
+            if (colInput.ToLower() == "undo" || colInput.ToLower() == "redo") return (0, 0, colInput);
+
 
             while (!int.TryParse(colInput, out col) || (col < 0 || col > 6))
             {

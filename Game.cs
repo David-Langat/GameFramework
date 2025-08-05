@@ -9,8 +9,8 @@ public abstract class Game
     protected Player player1;
     protected Player player2;
     protected int currentPlayerIndex;
-    private Stack<ICommand> undoStack = new Stack<ICommand>();
-    private Stack<ICommand> redoStack = new Stack<ICommand>();
+    protected Stack<GameState> undoStack = new Stack<GameState>();
+    protected Stack<GameState> redoStack = new Stack<GameState>();
 
     public Game(IUserInterface ui)
     {
@@ -18,7 +18,7 @@ public abstract class Game
     }
 
     protected abstract void InitializeNewGame(string playerMode, out Player player1, out Player player2);
-    public abstract bool PlayMove(int player, Player player1, Player player2);
+    protected abstract bool PlayMove(int player, Player player1, Player player2);
     protected abstract bool EndOfGame();
     protected abstract void ShowWinner(Player player1, Player player2);
     public abstract GameState CreateMemento();
@@ -29,69 +29,42 @@ public abstract class Game
         this.numberOfPlayers = numberOfPlayers;
         InitializeNewGame(playerMode, out player1, out player2);
         currentPlayerIndex = 0;
+        undoStack.Push(CreateMemento());
+
         while (!EndOfGame())
         {
-            char choice = ui.GetMenuChoice();
-            switch (choice)
+            if (!PlayMove(currentPlayerIndex, player1, player2))
             {
-                case 'm':
-                    ICommand move = new MoveCommand(this, currentPlayerIndex, player1, player2);
-                    move.Execute();
-                    undoStack.Push(move);
-                    redoStack.Clear();
-                    if (!PlayMove(currentPlayerIndex, player1, player2))
-                    {
-                        currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
-                    }
-                    break;
-                case 'u':
-                    if (undoStack.Count > 0)
-                    {
-                        ICommand lastMove = undoStack.Pop();
-                        lastMove.Unexecute();
-                        redoStack.Push(lastMove);
-                    }
-                    else
-                    {
-                        ui.DisplayMessage("No moves to undo.");
-                    }
-                    break;
-                case 'r':
-                    if (redoStack.Count > 0)
-                    {
-                        ICommand nextMove = redoStack.Pop();
-                        nextMove.Execute();
-                        undoStack.Push(nextMove);
-                    }
-                    else
-                    {
-                        ui.DisplayMessage("No moves to redo.");
-                    }
-                    break;
-                case 's':
-                    string saveFileName = ui.GetSaveFileName();
-                    GameState memento = CreateMemento();
-                    new GameCaretaker().SaveGame(memento, saveFileName);
-                    ui.DisplayMessage("Game saved successfully!");
-                    break;
-                case 'l':
-                    string loadFileName = ui.GetLoadFileName();
-                    try
-                    {
-                        GameState loadedMemento = new GameCaretaker().LoadGame(loadFileName);
-                        RestoreMemento(loadedMemento);
-                        ui.DisplayMessage("Game loaded successfully!");
-                    }
-                    catch (Exception ex)
-                    {
-                        ui.DisplayMessage($"Error loading game: {ex.Message}");
-                    }
-                    break;
-                case 'q':
-                    return;
+                currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
             }
         }
         ShowWinner(player1, player2);
+    }
+
+    public void Undo()
+    {
+        if (undoStack.Count > 1)
+        {
+            redoStack.Push(undoStack.Pop());
+            RestoreMemento(undoStack.Peek());
+        }
+        else
+        {
+            ui.DisplayMessage("No moves to undo.");
+        }
+    }
+
+    public void Redo()
+    {
+        if (redoStack.Count > 0)
+        {
+            undoStack.Push(redoStack.Pop());
+            RestoreMemento(undoStack.Peek());
+        }
+        else
+        {
+            ui.DisplayMessage("No moves to redo.");
+        }
     }
 }
 
@@ -147,6 +120,8 @@ public class SOSGame : Game
         else
         {
             var move = ui.GetPlayerMove(currentPlayer);
+            if (move.Item3.ToLower() == "undo") { Undo(); return true; }
+            if (move.Item3.ToLower() == "redo") { Redo(); return true; }
             row = move.Item1;
             col = move.Item2;
             piece = move.Item3;
@@ -162,6 +137,8 @@ public class SOSGame : Game
         }
 
         sosBoard.PlacePiece(row, col, piece);
+        undoStack.Push(CreateMemento());
+        redoStack.Clear();
         int points = AddPoint();
         if (points > 0)
         {
@@ -363,10 +340,14 @@ public class ConnectFour : Game
         else
         {
             var move = ui.GetPlayerMove(currentPlayer);
+            if (move.Item3.ToLower() == "undo") { Undo(); return true; }
+            if (move.Item3.ToLower() == "redo") { Redo(); return true; }
             col = move.Item2;
         }
 
         connectFourBoard.PlacePiece(col, currentPlayer.PlayerSymbol);
+        undoStack.Push(CreateMemento());
+        redoStack.Clear();
         ui.DisplayBoard(connectFourBoard.GetBoardAsString());
         return false;
     }
